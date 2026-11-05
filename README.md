@@ -2,8 +2,6 @@
 
 Small, free web tools for people who want calm breathing, a simple focus timer, and a pushup plan. Together they make up the website sitstandstretch.com.
 
-> Screenshot: add `docs/screenshot.png` (placeholder line — leave it exactly like this for GUI apps)
-
 > **Not medical advice. Stop if you feel dizzy or have pain. Ask your doctor or physical therapist before starting new exercises.**
 
 The home page (`/`) shows every tool as a card. Click a card, or its **Open** button, to start that tool. Each tool has a small **All tools** link at the top that takes you back to the home page.
