@@ -14,7 +14,7 @@
 const tools = [
   {
     id: 'breathing',
-    name: 'Calm Breathing Bubble',
+    name: 'Free Easy Breath Tool',
     description: 'A soft bubble grows and shrinks to guide your breathing in, hold, and out.',
     path: 'breathing',
     tag: 'Breathing',

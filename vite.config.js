@@ -30,7 +30,7 @@ function extensionlessUrls() {
 
 // Multi-page build: each HTML file in this folder is its own entry point.
 //   index.html     -> the home page (tool cards from src/tools.js)
-//   breathing.html -> Calm Breathing Bubble
+//   breathing.html -> Free Easy Breath Tool
 // Pages in public/ (timer.html, pushup-coach.html) are copied as they are.
 // base: './' makes asset URLs relative so the built files work whether they
 // live at the domain root or in any subfolder of a static host.

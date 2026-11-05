@@ -8,7 +8,7 @@ The home page (`/`) shows every tool as a card. Click a card, or its **Open** bu
 
 | Tool | Web address | What it does | Manual |
 |---|---|---|---|
-| Calm Breathing Bubble | `/breathing` | A bubble grows and shrinks to guide your breathing. | [Calm Breathing Bubble](#calm-breathing-bubble) |
+| Free Easy Breath Tool | `/breathing` | A bubble grows and shrinks to guide your breathing. | [Free Easy Breath Tool](#free-easy-breath-tool) |
 | 50 Minute Timer | `/timer` | A plain focus countdown for one task: 50 minutes, or the length you choose. | [50 Minute Timer](#50-minute-timer) |
 | Pushup Coach | `/pushup-coach` | A weekly plan that takes you from countertop pushups to floor pushups. | [Pushup Coach](#pushup-coach) |
 
@@ -25,9 +25,7 @@ Old addresses still work. On the web host, `.htaccess` sends `/requests` and `/r
 3. Run `npm install` one time. This downloads React, Vite, and Tailwind CSS into a `node_modules` folder.
 4. Run `npm run dev` and open the address it shows (usually `http://localhost:5173/`). You see the home page with the tool cards. You can also add a web address from the table above, for example `http://localhost:5173/timer`.
 
-## Calm Breathing Bubble
-
-The page heading says **Free Easy Breath Tool**.
+## Free Easy Breath Tool
 
 **What it does**
 - A bubble grows and shrinks to show you when to breathe in, hold, and breathe out.

@@ -337,7 +337,7 @@ function describeSession(s,type){
   if(type==='easy'){
     o.dayKind='Easy';o.title='Easy Day';o.subtitle='Lighter technique sets on '+base+'.';
     o.how=['Easy days groove your form and help you recover between hard days.','Aim for about '+rangeStr(tt)+' reps per set (~45–50% of your max) — smooth and controlled.','Stop with a few reps still in the tank. Rest about 4 minutes between sets.'];
-    for(var i=1;i<=3;i++)o.sets.push({n:i,surface:base,target:rangeStr(tt)+' reps',isNew:false,instr:'Controlled reps on '+base+', stop with reps to spare.'});
+    for(var i=1;i<=SETS;i++)o.sets.push({n:i,surface:base,target:rangeStr(tt)+' reps',isNew:false,instr:'Controlled reps on '+base+', stop with reps to spare.'});
     if(isTransitioning(s))o.notes.push('Easy days stay on your base surface ('+base+') — transition work happens on hard days.');
     return o;
   }
