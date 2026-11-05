@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>50 Minute Timer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500&display=swap');
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #0d0d0d;
+            color: #f3f3f3;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .task-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #262626;
+            color: #a1a1a1;
+            font-family: inherit;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            text-align: center;
+            padding: 12px 0;
+            margin-bottom: 40px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .task-input:focus {
+            border-bottom-color: #666;
+            color: #f3f3f3;
+        }
+
+        .timer-box {
+            position: relative;
+            width: min(70vw, 350px);
+            height: min(70vw, 350px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #141414;
+            border: 1px solid #222;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+
+        /* When the timer says "Done", the box grows wider so the word fits.
+           The height stays the same, and it never gets wider than the screen. */
+        .timer-box.is-done {
+            width: max-content;
+            min-width: calc(min(70vw, 350px) + 2px); /* + 2px border: same size as while counting */
+            height: calc(min(70vw, 350px) + 2px);
+            max-width: 100%;
+            padding: 0 clamp(16px, 4vw, 40px);
+            box-sizing: border-box;
+        }
+
+        .fill-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background-color: #1f1f1f;
+            z-index: 1;
+            transition: height 0.5s linear;
+        }
+
+        #timer {
+            position: relative;
+            z-index: 2;
+            font-size: clamp(5rem, 20vw, 10rem);
+            font-weight: 300;
+            user-select: none;
+            letter-spacing: -3px;
+            white-space: nowrap;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+            border: 1px solid #333;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #262626;
+            border-color: #444;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .all-tools {
+            margin-bottom: 28px;
+            color: #6b6b6b;
+            font-size: 0.875rem;
+            text-decoration: none;
+            border-radius: 4px;
+            padding: 2px 4px;
+            transition: color 0.2s;
+        }
+
+        .all-tools:hover,
+        .all-tools:focus-visible {
+            color: #b5b5b5;
+            text-decoration: underline;
+        }
+
+        .all-tools:focus-visible {
+            outline: 2px solid #666;
+            outline-offset: 2px;
+        }
+
+        .footer {
+            font-size: 0.85rem;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .footer:hover {
+            color: #888;
+        }
+
+        /* The footer is a real button: undo the general button look. */
+        button.footer {
+            flex: none;
+            background: none;
+            border: none;
+            padding: 6px;
+            font-size: 0.85rem;
+        }
+
+        button.footer:hover {
+            background: none;
+        }
+
+        /* Bottom row: Reset Timer · Adjust Timer (stays centered). */
+        .footer-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 2px 6px;
+        }
+
+        .footer-sep {
+            color: #333;
+            font-size: 0.85rem;
+            user-select: none;
+        }
+
+        /* Holds the box and the adjust arrows. The arrows sit just outside
+           the box, in the empty space on each side, so the box keeps its size. */
+        .timer-wrap {
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        .timer-wrap .timer-box {
+            margin-bottom: 0;
+        }
+
+        button.adjust-arrow {
+            display: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            flex: none;
+            width: 40px;
+            height: 64px;
+            padding: 0;
+            font-size: 1.75rem;
+            line-height: 1;
+            color: #a1a1a1;
+            background: transparent;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        button.adjust-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .adjust-arrow.left { right: calc(100% + 8px); }
+        .adjust-arrow.right { left: calc(100% + 8px); }
+
+        .adjusting .adjust-arrow { display: block; }
+
+        /* Small phones: less room beside the box, so the arrows get narrower. */
+        @media (max-width: 400px) {
+            button.adjust-arrow { width: 32px; font-size: 1.5rem; }
+            .adjust-arrow.left { right: calc(100% + 6px); }
+            .adjust-arrow.right { left: calc(100% + 6px); }
+        }
+
+        /* While adjusting, the minutes become a box you can type in. */
+        #minutesInput {
+            display: none;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #f3f3f3;
+            font-family: inherit;
+            font-size: clamp(5rem, 20vw, 10rem);
+            font-weight: 300;
+            letter-spacing: -3px;
+            text-align: center;
+            padding: 0;
+            outline: none;
+        }
+
+        .adjusting #minutesInput { display: block; }
+
+        #minutesInput::selection {
+            background: #3a3a3a;
+            color: #ffffff;
+        }
+        .adjusting #timer { display: none; }
+
+        .adjusting .timer-box {
+            border-color: #3a3a3a;
+        }
+
+        .adjust-hint {
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 14px;
+            z-index: 2;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6b6b6b;
+            pointer-events: none;
+        }
+
+        .adjusting .adjust-hint { display: block; }
+    </style>
+</head>
+<body>
+
+    <a class="all-tools" href="./"><span aria-hidden="true">&larr; </span>All tools</a>
+
+    <div class="container" id="container">
+        <input type="text" id="taskInput" class="task-input" placeholder="What are you working on?" aria-label="What are you working on?" autocomplete="off">
+
+        <div class="timer-wrap">
+            <button type="button" class="adjust-arrow left" id="minusBtn" aria-label="One minute less">&lsaquo;</button>
+            <div class="timer-box">
+                <div id="fillBar" class="fill-bar"></div>
+                <div id="timer" role="timer" aria-label="Minutes left">50</div>
+                <input type="text" id="minutesInput" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="Timer length in minutes (1 to 120)">
+                <div class="adjust-hint" aria-hidden="true">minutes</div>
+            </div>
+            <button type="button" class="adjust-arrow right" id="plusBtn" aria-label="One minute more">&rsaquo;</button>
+        </div>
+
+        <div class="controls">
+            <button type="button" id="playBtn" onclick="startTimer()">Play</button>
+            <button type="button" id="pauseBtn" onclick="pauseTimer()">Pause</button>
+        </div>
+
+        <div class="footer-row">
+            <button type="button" class="footer" onclick="manualReset()">Reset Timer</button>
+            <span class="footer-sep" aria-hidden="true">&middot;</span>
+            <button type="button" class="footer" id="adjustBtn" onclick="toggleAdjust()">Adjust Timer</button>
+            <span class="footer-sep" id="defaultSep" aria-hidden="true" hidden>&middot;</span>
+            <button type="button" class="footer" id="defaultBtn" onclick="setAsDefault()" hidden>Set as Default</button>
+        </div>
+    </div>
+
+    <script>
+        const MIN_MINUTES = 1;
+        const MAX_MINUTES = 120;
+        let timerInterval = null;
+        const display = document.getElementById('timer');
+        const timerBox = document.querySelector('.timer-box');
+        const container = document.getElementById('container');
+        const fillBar = document.getElementById('fillBar');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const taskInput = document.getElementById('taskInput');
+        const minutesInput = document.getElementById('minutesInput');
+        const adjustBtn = document.getElementById('adjustBtn');
+        const defaultBtn = document.getElementById('defaultBtn');
+        const defaultSep = document.getElementById('defaultSep');
+
+        // Browser storage can be blocked (private mode, strict settings).
+        // These helpers keep the timer working in memory without it.
+        const memory = {};
+        const store = {
+            get(key) { try { return localStorage.getItem(key); } catch (e) { return key in memory ? memory[key] : null; } },
+            set(key, value) { memory[key] = String(value); try { localStorage.setItem(key, value); } catch (e) {} },
+            remove(key) { delete memory[key]; try { localStorage.removeItem(key); } catch (e) {} }
+        };
+
+        function clampMinutes(value) {
+            const n = parseInt(value, 10);
+            if (!(n > 0)) return null;
+            return Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, n));
+        }
+
+        // Default length: 50 minutes unless the user saved another one.
+        function getDefaultMinutes() {
+            return clampMinutes(store.get('timerDefaultMinutes')) || 50;
+        }
+
+        // Length of the current timer (set with Adjust Timer), in seconds.
+        let totalDuration = (clampMinutes(store.get('timerMinutes')) || getDefaultMinutes()) * 60;
+
+        // Task persistence
+        taskInput.value = store.get('timerTask') || '';
+        taskInput.addEventListener('input', () => {
+            store.set('timerTask', taskInput.value);
+        });
+
+        function getRemainingSeconds() {
+            const endTime = store.get('timerEndTime');
+            if (!endTime) {
+                // Paused: continue from the saved time instead of starting over.
+                const saved = parseInt(store.get('timerRemaining'), 10);
+                return saved > 0 ? Math.min(saved, totalDuration) : totalDuration;
+            }
+            const remaining = Math.round((parseInt(endTime) - Date.now()) / 1000);
+            return remaining > 0 ? remaining : 0;
+        }
+
+        function updateDisplay() {
+            const remaining = getRemainingSeconds();
+            const minutes = Math.ceil(remaining / 60);
+            
+            if (remaining <= 0) {
+                display.textContent = "Done";
+                timerBox.classList.add('is-done');
+                fillBar.style.height = '100%';
+                resetState();
+                return;
+            }
+
+            display.textContent = minutes;
+            timerBox.classList.remove('is-done');
+            const elapsed = totalDuration - remaining;
+            const progress = (elapsed / totalDuration) * 100;
+            fillBar.style.height = progress + '%';
+        }
+
+        function startTimer() {
+            if (isAdjusting()) finishAdjust();
+            if (timerInterval) return;
+
+            let remaining = getRemainingSeconds();
+            if (remaining <= 0) {
+                remaining = totalDuration;
+            }
+
+            const endTime = Date.now() + remaining * 1000;
+            store.set('timerEndTime', endTime);
+            store.set('timerRunning', 'true');
+
+            playBtn.style.opacity = '0.5';
+            pauseBtn.style.opacity = '1';
+
+            store.remove('timerRemaining');
+            updateDisplay(); // show the time now, not 1 second later
+
+            timerInterval = setInterval(() => {
+                updateDisplay();
+                if (getRemainingSeconds() <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (!timerInterval) return;
+
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            const remaining = getRemainingSeconds();
+            store.set('timerRemaining', remaining);
+            store.remove('timerEndTime');
+            store.set('timerRunning', 'false');
+
+            playBtn.style.opacity = '1';
+            pauseBtn.style.opacity = '0.5';
+        }
+
+        function resetState() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            store.remove('timerEndTime');
+            store.remove('timerRemaining');
+            store.set('timerRunning', 'false');
+            playBtn.style.opacity = '1';
+            pauseBtn.style.opacity = '1';
+        }
+
+        // Set a fresh timer of this many minutes (not started).
+        function setLength(minutes) {
+            resetState();
+            totalDuration = minutes * 60;
+            store.set('timerMinutes', minutes);
+            display.textContent = minutes;
+            timerBox.classList.remove('is-done');
+            fillBar.style.height = '0%';
+            playBtn.style.opacity = '1';
+            pauseBtn.style.opacity = '0.5';
+        }
+
+        function manualReset() {
+            if (isAdjusting()) closeAdjust();
+            setLength(getDefaultMinutes());
+        }
+
+        // ----- Adjust Timer -----
+
+        function isAdjusting() {
+            return container.classList.contains('adjusting');
+        }
+
+        function toggleAdjust() {
+            if (isAdjusting()) finishAdjust();
+            else openAdjust();
+        }
+
+        function openAdjust() {
+            pauseTimer();
+            const shown = parseInt(display.textContent, 10);
+            minutesInput.value = shown > 0 ? shown : totalDuration / 60;
+            timerBox.classList.remove('is-done'); // back to the normal square while adjusting
+            container.classList.add('adjusting');
+            adjustBtn.textContent = 'Done';
+            defaultBtn.hidden = false;
+            defaultSep.hidden = false;
+            defaultBtn.textContent = 'Set as Default';
+            minutesInput.focus();
+            minutesInput.select();
+        }
+
+        // Use the typed or arrow-chosen number, then hide the arrows.
+        function finishAdjust() {
+            const minutes = clampMinutes(minutesInput.value);
+            const shown = parseInt(display.textContent, 10);
+            closeAdjust();
+            // Only start over when the number changed (keeps a paused timer as it was).
+            if (minutes && minutes !== shown) setLength(minutes);
+        }
+
+        function closeAdjust() {
+            container.classList.remove('adjusting');
+            if (display.textContent === 'Done') timerBox.classList.add('is-done');
+            adjustBtn.textContent = 'Adjust Timer';
+            defaultBtn.hidden = true;
+            defaultSep.hidden = true;
+            stopRepeat();
+        }
+
+        function setAsDefault() {
+            const minutes = clampMinutes(minutesInput.value) || getDefaultMinutes();
+            minutesInput.value = minutes;
+            store.set('timerDefaultMinutes', minutes);
+            defaultBtn.textContent = 'Saved as Default (' + minutes + ' min)';
+        }
+
+        function stepMinutes(delta) {
+            const current = clampMinutes(minutesInput.value) || totalDuration / 60;
+            const next = Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, current + delta));
+            minutesInput.value = next;
+            defaultBtn.textContent = 'Set as Default';
+        }
+
+        // Holding an arrow keeps changing the number.
+        let repeatDelay = null;
+        let repeatTimer = null;
+        function stopRepeat() {
+            clearTimeout(repeatDelay);
+            clearInterval(repeatTimer);
+            repeatDelay = repeatTimer = null;
+        }
+        function setupArrow(button, delta) {
+            button.addEventListener('pointerdown', (e) => {
+                e.preventDefault(); // keep the keyboard open and the number selected
+                stepMinutes(delta);
+                stopRepeat();
+                repeatDelay = setTimeout(() => {
+                    repeatTimer = setInterval(() => stepMinutes(delta), 90);
+                }, 400);
+            });
+            ['pointerup', 'pointerleave', 'pointercancel'].forEach((name) => {
+                button.addEventListener(name, stopRepeat);
+            });
+            // Keyboard users: Enter or Space on the arrow button.
+            button.addEventListener('click', (e) => {
+                if (e.detail === 0) stepMinutes(delta);
+            });
+        }
+        setupArrow(document.getElementById('minusBtn'), -1);
+        setupArrow(document.getElementById('plusBtn'), 1);
+
+        // Only allow digits while typing.
+        minutesInput.addEventListener('input', () => {
+            minutesInput.value = minutesInput.value.replace(/\D/g, '').slice(0, 3);
+            defaultBtn.textContent = 'Set as Default';
+        });
+        minutesInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); finishAdjust(); }
+            else if (e.key === 'Escape') { e.preventDefault(); closeAdjust(); }
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); stepMinutes(1); }
+            else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); stepMinutes(-1); }
+        });
+
+        // Initialize state on load
+        const isRunning = store.get('timerRunning') === 'true';
+        if (isRunning) {
+            if (getRemainingSeconds() > 0) {
+                startTimer();
+            } else {
+                updateDisplay(); // shows "Done"
+                pauseBtn.style.opacity = '0.5';
+            }
+        } else {
+            const savedRemaining = store.get('timerRemaining');
+            if (savedRemaining) {
+                const remaining = getRemainingSeconds();
+                display.textContent = Math.ceil(remaining / 60);
+                fillBar.style.height = ((totalDuration - remaining) / totalDuration) * 100 + '%';
+            } else {
+                updateDisplay();
+            }
+            pauseBtn.style.opacity = '0.5';
+        }
+    </script>
+
+</body>
+</html>

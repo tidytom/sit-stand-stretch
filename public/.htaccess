@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# Old addresses moved to new names (permanent redirects).
+RewriteRule ^requests(\.html)?/?$ /timer [R=301,L]
+RewriteRule ^myfitness(\.html)?/?$ /pushup-coach [R=301,L]
+
+# Serve extensionless URLs from their matching .html file.
+# e.g. /timer -> /timer.html  (internal rewrite: no redirect, cannot loop)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+# Security settings for every page (needs Apache mod_headers; skipped if it is missing).
+<IfModule mod_headers.c>
+    # Do not let other websites show these pages inside a frame.
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Content-Security-Policy "frame-ancestors 'self'"
+    # Browsers must use the file type the server sends, not guess it.
+    Header always set X-Content-Type-Options "nosniff"
+    # Send only the site name (not the full page address) to other sites.
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
