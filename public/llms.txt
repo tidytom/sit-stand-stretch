@@ -1,0 +1,23 @@
+# Sit Stand Stretch
+
+> Sit Stand Stretch is a small set of free web tools for calm breathing, focus and gentle strength. No account is needed, and each tool saves its settings only in the user's own browser.
+
+## Tools
+
+- [Free Easy Breath Tool](https://sitstandstretch.com/breathing): a soft bubble grows and shrinks to guide breathing in, hold and out; includes 4-7-8 relaxation, box breathing, double exhale and a gentle beginner pattern
+- [50 Minute Timer](https://sitstandstretch.com/timer): a plain focus countdown for one task at a time; play, pause, reset, adjust the length (1 to 120 minutes) and save your own default
+- [Pushup Coach](https://sitstandstretch.com/pushup-coach): a weekly plan that takes you from countertop pushups to full floor pushups, with a weekly test, hard and easy days, a rest timer, a log and a printable PDF plan
+
+## Pages
+
+- [Home](https://sitstandstretch.com/): all tools on one page
+
+## Notes
+
+- Free to use
+- Not medical advice. Stop if you feel dizzy or have pain, and ask a doctor or physical therapist before starting new exercises.
+- Settings and logs stay in the browser on the user's device; nothing is sent to a server
+
+## Made by
+
+- Tom: https://tomresume.com
